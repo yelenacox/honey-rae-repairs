@@ -1,6 +1,6 @@
 import { Outlet, Route, Routes } from "react-router-dom"
 import { TicketList } from "../tickets/TicketList"
-import { TicketForm } from "../tickets.TicketForm"
+import { TicketForm } from "../tickets/TicketForm"
 
 export const ApplicationViews = () => {
 	return (
