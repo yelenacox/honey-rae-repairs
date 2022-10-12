@@ -14,17 +14,32 @@ export const TicketForm = () => {
         TODO: Use the useNavigation() hook so you can redirect
         the user to the ticket list
     */
-
+    const navigate = useNavigate()
     const localHoneyUser = localStorage.getItem("honey_user")
     const honeyUserObject = JSON.parse(localHoneyUser)
 
     const handleSaveButtonClick = (event) => {
         event.preventDefault()
-
+        
         // TODO: Create the object to be saved to the API
-
-
+        const ticketToSendToAPI = {
+            userId: honeyUserObject.id,
+            description: ticket.description,
+            emergency: ticket.emergency,
+            dateCompleted: ""
+        }
         // TODO: Perform the fetch() to POST the object to the API
+        return fetch(`http://localhost:8088/serviceTickets`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(ticketToSendToAPI)
+        })
+        .then(res => res.json())
+        .then(() => {
+            navigate("/tickets")
+        })
     }
 
     return (
@@ -62,7 +77,9 @@ export const TicketForm = () => {
                         } />
                 </div>
             </fieldset>
-            <button className="btn btn-primary">
+            <button 
+            onClick = {(clickEvent) => handleSaveButtonClick(clickEvent)}
+            className="btn btn-primary">
                 Submit Ticket
             </button>
         </form>

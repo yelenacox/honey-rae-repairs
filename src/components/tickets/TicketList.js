@@ -6,23 +6,11 @@ export const TicketList = () => {
     const [tickets, setTickets] = useState([])
     const [filteredTickets, setFiltered] = useState([])
     const [emergency, setEmergency] = useState(false) /*Default state is false. Will be set to true on button click */
+    const [openOnly, updateOpenOnly] = useState(false) /*Default state is false. Will be set to true on button click */
     const navigate = useNavigate()
 
     const localHoneyUser = localStorage.getItem("honey_user")
     const honeyUserObject = JSON.parse(localHoneyUser)
-
-    useEffect(
-        () => {
-            if (emergency) {
-                const emergencyTickets = tickets.filter(ticket => ticket.emergency === true)
-                setFiltered(emergencyTickets)
-                /*This will show emergency tickets if the emergency property on the ticket is true. The setFiltered function is used because only employees should be able to see this */
-            } else {
-                setFiltered(tickets)
-            }
-        },
-        [emergency]
-    )
 
     useEffect(
         () => {
@@ -48,15 +36,47 @@ export const TicketList = () => {
         [tickets]
     )
 
+    useEffect(
+        () => {
+            if (emergency) {
+                const emergencyTickets = tickets.filter(ticket => ticket.emergency === true)
+                setFiltered(emergencyTickets)
+                /*This will show emergency tickets if the emergency property on the ticket is true. The setFiltered function is used because only employees should be able to see this */
+            } else {
+                setFiltered(tickets)
+            }
+        },
+        [emergency]
+    )
+
+    useEffect(
+        () => {
+            if (openOnly) {
+                const openTicketArray = tickets.filter(ticket => {
+                    return ticket.userId === honeyUserObject.id && ticket.dateCompleted === ""
+                })
+                setFiltered(openTicketArray)
+            }
+            else {
+                const myTickets = tickets.filter(ticket => ticket.userId === honeyUserObject.id)
+                setFiltered(myTickets)
+            }
+        },
+        [openOnly]
+    )
+
     return <>
         {
             honeyUserObject.staff
                 ? <>
-                <button onClick={() => { setEmergency(true) }}>Emergency Only</button> 
-                <button onClick={() => { setEmergency(false) }}>Show All</button> 
+                    <button onClick={() => { setEmergency(true) }}>Emergency Only</button>
+                    <button onClick={() => { setEmergency(false) }}>Show All</button>
                 </>
-                : 
-                <button onClick={() => navigate("/ticket/create")}>Create Ticket</button>
+                : <>
+                    <button onClick={() => navigate("/ticket/create")}>Create Ticket</button>
+                    <button onClick={() => updateOpenOnly(true)}>Open Ticket</button>
+                    <button onClick={() => updateOpenOnly(false)}>All My Tickets</button>
+                </>
         }
         <h2>List of Tickets</h2>
 
