@@ -4,8 +4,31 @@
 }
 
 .ticket {
-    background-color: peachpuff;
-    border: 1px dotted greenyellow;
+    background-color: rgb(200, 223, 232);
+    border: 1px dotted orchid;
     padding: 0.7rem;
     margin: 0.5rem 0;
 }
+
+header{
+    padding-bottom: 0.5rem;
+}
+
+.emergency_status{
+    padding-bottom: 0.7rem;
+}
+
+footer {
+    padding: 0.5rem 0;
+    border-top: dashed 1px black;
+}
+
+.ticket__finish {
+    float: right;
+}
+
+.ticket__delete {
+    float: right;
+    background-color: rosybrown;
+}
+

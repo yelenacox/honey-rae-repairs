@@ -23,14 +23,16 @@ export const TicketList = ({ searchTermState }) => {
         },
         [searchTermState]
     )
-
+        const getAllTickets = () => {
+            fetch(`http://localhost:8088/serviceTickets?_embed=employeeTickets`)
+            .then(response => response.json())
+            .then((ticketArray) => {
+                setTickets(ticketArray)
+            })
+        }
     useEffect(
         () => {
-            fetch(`http://localhost:8088/serviceTickets?_embed=employeeTickets`)
-                .then(response => response.json())
-                .then((ticketArray) => {
-                    setTickets(ticketArray)
-                })
+            getAllTickets()        
             fetch(`http://localhost:8088/employees?_expand=user`)
                 .then(response => response.json())
                 .then((employeeArray) => {
@@ -101,8 +103,12 @@ export const TicketList = ({ searchTermState }) => {
             {
                 filteredTickets.map(
                     /*This initially mapped through "tickets" array, but now that the filteredTickets have been added to line 6, it needed to be changed to map through filteredTickets array */
-                    (ticket) => <Ticket employees={employees} currentUser={honeyUserObject} ticketObject={ticket}/> 
-                    
+                    (ticket) => <Ticket
+                        key={`ticket--${ticket.id}`}
+                        employees={employees}
+                        currentUser={honeyUserObject}
+                        ticketObject={ticket} 
+                        getAllTickets={getAllTickets}/>
                 )
             }
         </article>
