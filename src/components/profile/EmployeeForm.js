@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
+
+
 export const EmployeeForm = () => {
     // TODO: Provide initial state for profile
     const [profile, updateProfile] = useState({
@@ -8,21 +10,29 @@ export const EmployeeForm = () => {
         rate: 0,
         userId: 0
     })
-    
-    const navigate = useNavigate()
+
+    const [feedback, setFeedback] = useState("")
+
     const localHoneyUser = localStorage.getItem("honey_user")
     const honeyUserObject = JSON.parse(localHoneyUser)
 
     // TODO: Get employee profile info from API and update state
     useEffect(() => {
         fetch(`http://localhost:8088/employees?userId=${honeyUserObject.id}`)
-       .then(response => response.json())
-        .then((data) => {
-            const employeeObject = data[0]
-            updateProfile(employeeObject)
-        })
+            .then(response => response.json())
+            .then((data) => {
+                const employeeObject = data[0]
+                updateProfile(employeeObject)
+            })
     }, [])
-        
+
+    useEffect(() => {
+        if (feedback !== "") {
+            // Clear feedback to make entire element disappear after 3 seconds
+            setTimeout(() => setFeedback(""), 3000);
+        }
+    }, [feedback])
+
     /*
         TODO: Perform the PUT fetch() call here to update the profile.
         Navigate user to home page when done.
@@ -37,15 +47,18 @@ export const EmployeeForm = () => {
             },
             body: JSON.stringify(profile)
         })
-        .then(response => response.json())
-        .then(() => {
-            // navigate("/employees")
-        })
+            .then(response => response.json())
+            .then(() => {
+                setFeedback("Employee profile successfully saved")
+            })
     }
 
     return (
         <form className="profile">
-            <h2 className="profile__title">New Service Ticket</h2>
+            <div className={`${feedback.includes("Error") ? "error" : "feedback"} ${feedback === "" ? "invisible" : "visible"}`}>
+                {feedback}
+            </div>
+            <h2 className="profile__title">Profile</h2>
             <fieldset>
                 <div className="form-group">
                     <label htmlFor="specialty">Specialty:</label>
@@ -56,7 +69,7 @@ export const EmployeeForm = () => {
                         value={profile.specialty}
                         onChange={
                             (evt) => {
-                                const copy = {...profile}
+                                const copy = { ...profile }
                                 copy.specialty = evt.target.value
                                 updateProfile(copy)
                                 // TODO: Update specialty property
@@ -72,7 +85,7 @@ export const EmployeeForm = () => {
                         value={profile.rate}
                         onChange={
                             (evt) => {
-                                const copy = {...profile}
+                                const copy = { ...profile }
                                 copy.rate = parseFloat(evt.target.value, 2)
                                 updateProfile(copy)
                                 // TODO: Update rate property
