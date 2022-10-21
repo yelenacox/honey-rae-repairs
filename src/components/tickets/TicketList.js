@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { Ticket } from "./Ticket"
 import "./tickets.css"
 
 export const TicketList = ({ searchTermState }) => {
     const [tickets, setTickets] = useState([])
+    const [employees, setEmployees] = useState([])
     const [filteredTickets, setFiltered] = useState([])
     const [emergency, setEmergency] = useState(false) /*Default state is false. Will be set to true on button click */
     const [openOnly, updateOpenOnly] = useState(false) /*Default state is false. Will be set to true on button click */
@@ -19,15 +21,20 @@ export const TicketList = ({ searchTermState }) => {
             })
             setFiltered(searchedTickets)
         },
-        [ searchTermState ]
+        [searchTermState]
     )
 
     useEffect(
         () => {
-            fetch(`http://localhost:8088/serviceTickets`)
+            fetch(`http://localhost:8088/serviceTickets?_embed=employeeTickets`)
                 .then(response => response.json())
                 .then((ticketArray) => {
                     setTickets(ticketArray)
+                })
+            fetch(`http://localhost:8088/employees?_expand=user`)
+                .then(response => response.json())
+                .then((employeeArray) => {
+                    setEmployees(employeeArray)
                 })
 
         },
@@ -94,12 +101,8 @@ export const TicketList = ({ searchTermState }) => {
             {
                 filteredTickets.map(
                     /*This initially mapped through "tickets" array, but now that the filteredTickets have been added to line 6, it needed to be changed to map through filteredTickets array */
-                    (ticket) => {
-                        return <section className="ticket">
-                            <header>{ticket.description}</header>
-                            <footer>Emergency: {ticket.emergency ? "Yes" : "No"}</footer>
-                        </section>
-                    }
+                    (ticket) => <Ticket employees={employees} currentUser={honeyUserObject} ticketObject={ticket}/> 
+                    
                 )
             }
         </article>
